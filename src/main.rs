@@ -1,8 +1,8 @@
 extern crate sdl2;
+mod events;
 
+use events::Events;
 use sdl2::pixels::Color;
-use std::thread;
-use std::time::Duration;
 
 fn main() {
     // Inicializamos sdl2
@@ -12,14 +12,21 @@ fn main() {
     let window = video.window("Rust Invaders", 800, 600)
         .position_centered().opengl()
         .build().unwrap();
+
     let mut renderer = window.renderer()
         .accelerated()
         .build().unwrap();
 
-    // Renderizamos una ventana completamente negra
-    renderer.set_draw_color(Color::RGB(0, 0, 0));
-    renderer.clear();
-    renderer.present();
+    let mut events = Events::new(sdl_context.event_pump().unwrap());
+    loop {
+        events.pump();
 
-    thread::sleep(Duration::from_millis(3000));
+        if events.quit || events.key_escape {
+            break;
+        }
+
+        renderer.set_draw_color(Color::RGB(0, 0, 0));
+        renderer.clear();
+        renderer.present();
+    }    
 }
